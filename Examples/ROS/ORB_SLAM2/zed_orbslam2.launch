@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="use_sim_time" value="true" />
+  <!-- Path of the file containing the ORB vocabulary. -->
+  <arg name="vocabulary_file_path" default = "/home/sal/VSLAM/ORBSLAM2/Vocabulary/ORBvoc.txt"/>
+  <!-- Path of the file containing ORB SLAM2 configuration. -->
+  <arg name="orb_slam2_settings_file_path" default = "$(find ORB_SLAM2)/params/zed.yaml"/>
+    <!-- Path of the file containing camera calibration. -->
+  <!--arg name="camera_calibration_file_path" default = "$(find indica_localization)/params/zed/camchain_zed_calib.yaml"-->
+  
+  <node pkg="rosbag" type="play" name="player" args="--clock -r 0.1 /home/sal/bagfiles/session_5.bag"/>
+
+  <node pkg="tf2_ros" type="static_transform_publisher" name="camera_broadcaster" args="1 0 0.5 -1.57 0 -1.57 base_link camera_link" />
+
+
+  <!-- ORB SLAM2 stereo. -->
+  <node pkg="ORB_SLAM2" name="orb_slam_2_ros_node" type="Stereo" output="screen">
+
+    <param name="vocabulary_file_path" value="$(arg vocabulary_file_path)"/>
+    <param name="settings_file_path" value="$(arg orb_slam2_settings_file_path)"/>
+    <param name="visualization" type="bool" value="true"/>
+    <remap from="camera/left/image_raw" to="/left/image_rect_color"/>
+    <remap from="camera/right/image_raw" to="/right/image_rect_color"/>
+
+  </node>
+
+
+</launch>
+
